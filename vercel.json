@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/api-tempo/:path*",
+            "destination": "https://api.tempo.io/4/:path*"
+        },
+        {
+            "source": "/api-jira/:path*",
+            "destination": "https://ayudatsoft.atlassian.net/rest/api/2/:path*"
+        }
+    ]
+}
