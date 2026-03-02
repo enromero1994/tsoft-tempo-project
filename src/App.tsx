@@ -87,7 +87,7 @@ const App: React.FC = () => {
         } catch (e) { break; }
       }
 
-      setDisplayData(prev => {
+      setDisplayData((prev: any[]) => {
         const newData = [...prev, { id: project.id, projectName: project.name || project.key, approvals: allProjectApprovals }];
         localStorage.setItem('tempo_displayData', JSON.stringify(newData));
         return newData;
@@ -107,8 +107,8 @@ const App: React.FC = () => {
       body: JSON.stringify({ teamMemberIds: [accountId], period: { from, to }, comment: "Aprobado mediante Panel Tsoft" })
     });
     if (res.ok) {
-      setDisplayData(prev => {
-        const updated = prev.map(p => p.id === projectId ? { ...p, approvals: p.approvals.map((a: any) => a.user.id === accountId ? { ...a, status: { key: 'APPROVED' } } : a) } : p);
+      setDisplayData((prev: any[]) => {
+        const updated = prev.map((p: any) => p.id === projectId ? { ...p, approvals: p.approvals.map((a: any) => a.user.id === accountId ? { ...a, status: { key: 'APPROVED' } } : a) } : p);
         localStorage.setItem('tempo_displayData', JSON.stringify(updated));
         return updated;
       });
@@ -117,7 +117,7 @@ const App: React.FC = () => {
   };
 
   const exportToExcel = () => {
-    const rows = filteredData.flatMap(p => p.approvals.map(a => ({ Proyecto: p.projectName, Colaborador: a.userName, Estado: a.status.key, Horas: (a.timeSpentSeconds / 3600).toFixed(2), Desde: a.period.from, Hasta: a.period.to })));
+    const rows = filteredData.flatMap((p: any) => p.approvals.map((a: any) => ({ Proyecto: p.projectName, Colaborador: a.userName, Estado: a.status.key, Horas: (a.timeSpentSeconds / 3600).toFixed(2), Desde: a.period.from, Hasta: a.period.to })));
     if (rows.length === 0) return alert("⚠️ No hay datos.");
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -125,7 +125,7 @@ const App: React.FC = () => {
     XLSX.writeFile(wb, `Control_Tempo_${dateFrom}.xlsx`);
   };
 
-  const filteredData = displayData.map(proj => ({ ...proj, approvals: proj.approvals.filter(auth => (filterStatus === 'ALL' || auth.status.key === filterStatus) && (auth.userName || '').toLowerCase().includes(userSearch.toLowerCase())) })).filter(proj => proj.projectName.toLowerCase().includes(projectSearch.toLowerCase()) && (filterType === 'ALL' || proj.projectName.toUpperCase().startsWith(filterType)) && (viewMode === 'ALL' || proj.approvals.length > 0));
+  const filteredData = displayData.map((proj: any) => ({ ...proj, approvals: proj.approvals.filter((auth: any) => (filterStatus === 'ALL' || auth.status.key === filterStatus) && (auth.userName || '').toLowerCase().includes(userSearch.toLowerCase())) })).filter((proj: any) => proj.projectName.toLowerCase().includes(projectSearch.toLowerCase()) && (filterType === 'ALL' || proj.projectName.toUpperCase().startsWith(filterType)) && (viewMode === 'ALL' || proj.approvals.length > 0));
 
   if (initialLoad) return <div style={s.loading}>Sincronizando Proyectos...</div>;
 
@@ -152,7 +152,7 @@ const App: React.FC = () => {
       <div style={s.tableContainer}>
         <table style={s.table}>
           <thead><tr style={{ backgroundColor: '#f1f2f6' }}><th style={s.th}>Proyecto</th><th style={s.th}>Colaborador</th><th style={s.th}>Estado</th><th style={s.th}>Horas</th><th style={s.th}>Periodo</th></tr></thead>
-          <tbody>{filteredData.map((proj, i) => proj.approvals.length > 0 ? proj.approvals.map((auth, j) => <tr key={`${i}-${j}`} style={s.tr}>{j === 0 && <td rowSpan={proj.approvals.length} style={s.tdProject}>{proj.projectName}</td>}<td style={s.td}>{auth.userName}</td><td style={s.td}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><span style={{ color: auth.status.key === 'APPROVED' ? '#27ae60' : '#e67e22', fontWeight: 'bold' }}>{auth.status.key}</span>{auth.status.key !== 'APPROVED' && <button onClick={() => approveHours(proj.id, auth.period.from, auth.period.to, auth.user.id, auth.userName)} style={s.btnApprove}>✅</button>}</div></td><td style={s.td}>{(auth.timeSpentSeconds / 3600).toFixed(2)}h</td><td style={s.td}>{auth.period.from} / {auth.period.to}</td></tr>) : <tr key={`empty-${i}`} style={{ ...s.tr, backgroundColor: '#fdfdfd' }}><td style={{ ...s.tdProject, color: '#999' }}>{proj.projectName}</td><td colSpan={4} style={{ ...s.td, color: '#ccc', fontStyle: 'italic' }}>Sin registros</td></tr>)}</tbody>
+          <tbody>{filteredData.map((proj: any, i: number) => proj.approvals.length > 0 ? proj.approvals.map((auth: any, j: number) => <tr key={`${i}-${j}`} style={s.tr}>{j === 0 && <td rowSpan={proj.approvals.length} style={s.tdProject}>{proj.projectName}</td>}<td style={s.td}>{auth.userName}</td><td style={s.td}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><span style={{ color: auth.status.key === 'APPROVED' ? '#27ae60' : '#e67e22', fontWeight: 'bold' }}>{auth.status.key}</span>{auth.status.key !== 'APPROVED' && <button onClick={() => approveHours(proj.id, auth.period.from, auth.period.to, auth.user.id, auth.userName)} style={s.btnApprove}>✅</button>}</div></td><td style={s.td}>{(auth.timeSpentSeconds / 3600).toFixed(2)}h</td><td style={s.td}>{auth.period.from} / {auth.period.to}</td></tr>) : <tr key={`empty-${i}`} style={{ ...s.tr, backgroundColor: '#fdfdfd' }}><td style={{ ...s.tdProject, color: '#999' }}>{proj.projectName}</td><td colSpan={4} style={{ ...s.td, color: '#ccc', fontStyle: 'italic' }}>Sin registros</td></tr>)}</tbody>
         </table>
       </div>
     </div>
