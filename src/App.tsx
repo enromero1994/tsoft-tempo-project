@@ -20,8 +20,22 @@ const App: React.FC = () => {
   const [loadingMessage, setLoadingMessage] = useState('');
   const [initialLoad, setInitialLoad] = useState(true);
 
-  const [dateFrom, setDateFrom] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]);
-  const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
+  // --- LÓGICA DE FECHAS AUTOMÁTICA ---
+  const getMonthDates = () => {
+    const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return {
+      first: first.toISOString().split('T')[0],
+      last: last.toISOString().split('T')[0]
+    };
+  };
+
+  const initialDates = getMonthDates();
+  const [dateFrom, setDateFrom] = useState(initialDates.first);
+  const [dateTo, setDateTo] = useState(initialDates.last);
+  // ----------------------------------
+
   const [projectSearch, setProjectSearch] = useState('');
   const [userSearch, setUserSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -132,7 +146,7 @@ const App: React.FC = () => {
   return (
     <div style={s.container}>
       <div style={s.header}>
-        <h1 style={s.title}>Estado de Horas por Proyecto</h1>
+        <h1 style={s.title}>Control de Horas Tsoft</h1>
         <div style={{ display: 'flex', gap: '10px' }}>
           {currentIndex < allProjectList.length && <button onClick={loadAllRemaining} disabled={loading} style={s.btnLoad}>{loading ? `⏳ ${loadingMessage}` : `🚀 Cargar Pendientes (${allProjectList.length - currentIndex})`}</button>}
           <button onClick={exportToExcel} style={s.btnExcel}>Excel 📥</button>
