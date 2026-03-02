@@ -6,7 +6,7 @@
         },
         {
             "source": "/api-jira/:path*",
-            "destination": "https://ayudatsoft.atlassian.net/rest/api/2/:path*"
+            "destination": "https://ayudatsoft.atlassian.net/:path*"
         }
     ]
 }
